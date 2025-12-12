@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="mt-4 text-light">Dashboard, {{ current_user.email }}</h1>
+
+<div class="card p-4 mb-4">
+    <h3 class="text-info">Run New Audit</h3>
+    <form method="POST" action="{{ url_for('run_audit') }}">
+        <div class="form-group">
+            <label for="website_url">Website URL (e.g., https://example.com)</label>
+            <input type="url" class="form-control" id="website_url" name="website_url" required 
+                   placeholder="Enter full URL with https://">
+        </div>
+        <div class="form-group">
+            <label for="email_recipient">Email Report To (Optional)</label>
+            <input type="email" class="form-control" id="email_recipient" name="email_recipient" 
+                   placeholder="Email address for PDF report delivery">
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Run Audit Now (Instant)</button>
+    </form>
+</div>
+
+<div class="card p-4 mb-4">
+    <h3 class="text-warning">Schedule Daily Audit (Worker Disabled)</h3>
+    {% if current_user.scheduled_website %}
+        <p class="text-success">Current Scheduled Website: <strong>{{ current_user.scheduled_website }}</strong></p>
+        <p class="text-success">Report Email: <strong>{{ current_user.scheduled_email }}</strong></p>
+        <form method="POST" action="{{ url_for('unschedule_report') }}" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-danger">Cancel Schedule</button>
+        </form>
+        <p class="mt-2 text-warning">Note: The background worker is currently disabled, so scheduled audits will not run automatically.</p>
+    {% else %}
+        <form method="POST" action="{{ url_for('schedule_report') }}">
+            <div class="form-group">
+                <label for="scheduled_website">Website URL for Daily Audit</label>
+                <input type="url" class="form-control" id="scheduled_website" name="scheduled_website" required 
+                       placeholder="Enter full URL with https://">
+            </div>
+            <div class="form-group">
+                <label for="scheduled_email">Send Daily Report To</label>
+                <input type="email" class="form-control" id="scheduled_email" name="scheduled_email" required 
+                       placeholder="Email address for report delivery">
+            </div>
+            <button type="submit" class="btn btn-warning mt-2">Save Schedule (Queues immediate test run)</button>
+        </form>
+    {% endif %}
+</div>
+
+
+<h3 class="mt-5 text-light">Recent Audit Reports</h3>
+{% if reports %}
+    <div class="table-responsive">
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>URL</th>
+                    <th>Date</th>
+                    <th>Performance</th>
+                    <th>Security</th>
+                    <th>Accessibility</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.id }}</td>
+                    <td>{{ report.website_url | truncate(50) }}</td>
+                    <td>{{ report.date_audited.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td><span class="badge badge-{% if report.performance_score >= 90 %}success{% elif report.performance_score >= 70 %}warning{% else %}danger{% endif %}">{{ report.performance_score }}%</span></td>
+                    <td><span class="badge badge-{% if report.security_score >= 90 %}success{% elif report.security_score >= 70 %}warning{% else %}danger{% endif %}">{{ report.security_score }}%</span></td>
+                    <td><span class="badge badge-{% if report.accessibility_score >= 90 %}success{% elif report.accessibility_score >= 70 %}warning{% else %}danger{% endif %}">{{ report.accessibility_score }}%</span></td>
+                    <td>
+                        <a href="{{ url_for('view_report', report_id=report.id) }}" class="btn btn-sm btn-info">View</a>
+                        <a href="{{ url_for('report_pdf', report_id=report.id) }}" target="_blank" class="btn btn-sm btn-danger">PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-muted">No reports found. Run an audit above!</p>
+{% endif %}
+
+{% endblock content %}
