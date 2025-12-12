@@ -1,0 +1,13 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Bcrypt==1.0.1
+Flask-Login==0.6.3
+Flask-Mail==0.10.0
+Werkzeug==3.0.4
+psycopg==3.2.3         # Modern PostgreSQL driver
+WeasyPrint==62.3
+cairocffi==1.7.1
+redis==5.0.8
+rq==1.16.2
+python-dotenv==1.0.1
+gunicorn==23.0.0       # Production WSGI server
