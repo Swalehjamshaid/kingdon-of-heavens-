@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Web Audit Tool - {{ title or "Dashboard" }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #1e1e1e; color: #f8f8f8; }
+        .navbar { background-color: #252526 !important; }
+        .card { background-color: #2d2d30; border-color: #3e3e42; }
+        .table-dark th { border-color: #3e3e42; }
+        .table-dark td { border-color: #3e3e42; }
+        .btn-primary { background-color: #007bff; border-color: #007bff; }
+        .form-control { background-color: #3c3c3c; border-color: #555; color: #fff; }
+        .form-control:focus { background-color: #3c3c3c; border-color: #007bff; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+        .alert-success { background-color: #28a745; color: #fff; border-color: #1e7e34; }
+        .alert-danger { background-color: #dc3545; color: #fff; border-color: #bd2130; }
+        .alert-warning { background-color: #ffc107; color: #333; border-color: #d39e00; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('home') }}">FF Tech WebAudit</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                </li>
+                {% if current_user.is_admin %}
+                <li class="nav-item">
+                    <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">Admin</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="btn btn-sm btn-outline-danger" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
