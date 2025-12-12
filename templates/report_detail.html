@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-primary">Audit Report for <span class="text-white">{{ report.website_url }}</span></h1>
+            <p class="lead text-muted">Generated on: {{ report.date_audited.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-outline-light mb-3">← Back to Dashboard</a>
+            
+            <a href="{{ url_for('report_pdf', report_id=report.id) }}" target="_blank" class="btn btn-danger btn-sm mb-3">Download PDF Report</a>
+        </div>
+    </div>
+
+    <div class="row mb-5 text-center">
+        <div class="col-md-2">
+            <div class="card bg-dark text-white p-3 score-card">
+                <h2 class="h6">Performance</h2>
+                <p class="display-5 font-weight-bold {% if scores.performance >= 90 %}text-success{% elif scores.performance >= 70 %}text-warning{% else %}text-danger{% endif %}">{{ scores.performance }}%</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-dark text-white p-3 score-card">
+                <h2 class="h6">Security</h2>
+                <p class="display-5 font-weight-bold {% if scores.security >= 90 %}text-success{% elif scores.security >= 70 %}text-warning{% else %}text-danger{% endif %}">{{ scores.security }}%</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-dark text-white p-3 score-card">
+                <h2 class="h6">Accessibility</h2>
+                <p class="display-5 font-weight-bold {% if scores.accessibility >= 90 %}text-success{% elif scores.accessibility >= 70 %}text-warning{% else %}text-danger{% endif %}">{{ scores.accessibility }}%</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white p-3 score-card">
+                <h2 class="h6">Technical & SEO</h2>
+                <p class="display-5 font-weight-bold {% if scores.tech_seo >= 90 %}text-success{% elif scores.tech_seo >= 70 %}text-warning{% else %}text-danger{% endif %}">{{ scores.tech_seo }}%</p> 
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark text-white p-3 score-card">
+                <h2 class="h6">UX & Content</h2>
+                <p class="display-5 font-weight-bold {% if scores.ux >= 90 %}text-success{% elif scores.ux >= 70 %}text-warning{% else %}text-danger{% endif %}">{{ scores.ux }}%</p> 
+            </div>
+        </div>
+    </div>
+
+    <h3 class="text-light mt-4">Detailed Metrics Breakdown</h3>
+    <div class="accordion" id="reportMetricsAccordion">
+        {% for category, metrics_dict in metrics.items() %}
+        {% set category_id = category | lower | replace(' ', '-') | replace('(', '') | replace(')', '') | replace('.', '') %}
+        <div class="card bg-secondary text-white mb-2">
+            <div class="card-header" id="{{ category_id }}">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left text-white" type="button" data-toggle="collapse" data-target="#collapse-{{ category_id }}" aria-expanded="{% if loop.index < 3 %}true{% else %}false{% endif %}" aria-controls="collapse-{{ category_id }}">
+                        {{ category }}
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapse-{{ category_id }}" class="collapse {% if loop.index < 3 %}show{% endif %}" aria-labelledby="{{ category_id }}" data-parent="#reportMetricsAccordion">
+                <div class="card-body bg-dark">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th style="width: 70%;">Metric Name</th>
+                                <th style="width: 30%;">Result/Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for metric_name, value in metrics_dict.items() %}
+                            <tr>
+                                <td>{{ metric_name }}</td>
+                                <td class="font-weight-bold">
+                                    {% set lower_value = value | lower %}
+                                    {% if 'excellent' in lower_value or 'good' in lower_value %}
+                                        <span class="badge badge-success">{{ value }}</span>
+                                    {% elif 'fair' in lower_value %}
+                                        <span class="badge badge-warning">{{ value }}</span>
+                                    {% elif 'poor' in lower_value %}
+                                        <span class="badge badge-danger">{{ value }}</span>
+                                    {% else %}
+                                        <span class="text-light">{{ value }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock content %}
