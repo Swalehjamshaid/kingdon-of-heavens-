@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-danger">Admin Control Panel</h1>
+            <p class="lead text-muted">System-wide overview for FF Tech WebAudit.</p>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="row mb-3">
+                <div class="col-12">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card bg-dark text-white p-4">
+                <h3 class="text-info">👤 Create New User Account</h3>
+                <form method="POST" action="{{ url_for('admin_create_user') }}" class="form-group">
+                    <div class="mb-3">
+                        <label for="new_user_email" class="form-label">Email Address:</label>
+                        <input type="email" id="new_user_email" name="new_user_email" required 
+                               placeholder="new.user@example.com" class="form-control bg-secondary text-white border-info">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_user_password" class="form-label">Initial Password (Min 6 chars):</label>
+                        <input type="password" id="new_user_password" name="new_user_password" required 
+                               placeholder="••••••••" class="form-control bg-secondary text-white border-info">
+                    </div>
+                    
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="is_admin_flag" name="is_admin_flag">
+                        <label class="form-check-label" for="is_admin_flag">Grant Admin Privileges?</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Create User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-4 text-warning">System Users</h3>
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Total Reports</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td><span class="badge badge-{% if user.is_admin %}danger{% else %}success{% endif %}">{{ 'Admin' if user.is_admin else 'Standard' }}</span></td>
+                <td>{{ user.reports|length }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</div>
+{% endblock content %}
