@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="jumbotron text-center bg-dark mt-5">
+        <h1 class="display-4 text-primary">Welcome to the Web Audit Tool</h1>
+        <p class="lead">Log in to run comprehensive audits covering Performance, Security, and SEO.</p>
+        <hr class="my-4" style="border-top: 1px solid #3e3e42;">
+        <p>Your centralized platform for website health analysis.</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Get Started</a>
+    </div>
+{% endblock content %}
